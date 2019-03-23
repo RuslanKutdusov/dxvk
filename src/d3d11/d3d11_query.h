@@ -51,6 +51,8 @@ namespace dxvk {
     Rc<DxvkGpuQuery>  m_query = nullptr;
     Rc<DxvkGpuEvent>  m_event = nullptr;
 
+    DxvkBufferSlice m_predicate;
+
     D3D10Query m_d3d10;
 
     UINT64 GetTimestampQueryFrequency() const;

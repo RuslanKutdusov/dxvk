@@ -24,6 +24,7 @@ namespace dxvk {
       case D3D11_QUERY_OCCLUSION_PREDICATE:
         m_query = dxvkDevice->createGpuQuery(
           VK_QUERY_TYPE_OCCLUSION, 0, 0);
+        m_predicate = m_device->AllocPredicateSlice();
         break;
         
       case D3D11_QUERY_TIMESTAMP:
@@ -75,7 +76,8 @@ namespace dxvk {
   
   
   D3D11Query::~D3D11Query() {
-    
+    if (m_predicate.defined())
+      m_device->FreePredicateSlice(m_predicate);
   }
   
     
@@ -198,6 +200,9 @@ namespace dxvk {
       default:
         ctx->endQuery(m_query);
     }
+
+    if (m_predicate.defined())
+      ctx->writePredicate(m_predicate, m_query);
   }
   
   

@@ -45,6 +45,7 @@ namespace dxvk {
 
     m_uavCounters = CreateUAVCounterBuffer();
     m_xfbCounters = CreateXFBCounterBuffer();
+    m_predicates  = CreatePredicateBuffer();
   }
   
   
@@ -1465,6 +1466,21 @@ namespace dxvk {
     
     return new D3D11CounterBuffer(m_dxvkDevice,
       xfbCounterInfo, sizeof(D3D11SOCounter));
+  }
+  
+  
+  Rc<D3D11CounterBuffer> D3D11Device::CreatePredicateBuffer() {
+    DxvkBufferCreateInfo predCounterInfo;
+    predCounterInfo.size   = 4096 * sizeof(uint32_t);
+    predCounterInfo.usage  = VK_BUFFER_USAGE_TRANSFER_DST_BIT
+                           | VK_BUFFER_USAGE_CONDITIONAL_RENDERING_BIT_EXT;
+    predCounterInfo.stages = VK_PIPELINE_STAGE_TRANSFER_BIT
+                           | VK_PIPELINE_STAGE_CONDITIONAL_RENDERING_BIT_EXT;
+    predCounterInfo.access = VK_ACCESS_TRANSFER_WRITE_BIT
+                           | VK_ACCESS_CONDITIONAL_RENDERING_READ_BIT_EXT;
+    
+    return new D3D11CounterBuffer(m_dxvkDevice,
+      predCounterInfo, sizeof(uint32_t));
   }
   
   
