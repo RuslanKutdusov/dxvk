@@ -339,10 +339,10 @@ public:
       throw DxvkError("Failed to create input layout");
     
     D3D11_QUERY_DESC queryDesc;
-    queryDesc.Query = D3D11_QUERY_OCCLUSION;
+    queryDesc.Query = D3D11_QUERY_OCCLUSION_PREDICATE;
     queryDesc.MiscFlags = 0;
     
-    if (FAILED(m_device->CreateQuery(&queryDesc, &m_query)))
+    if (FAILED(m_device->CreatePredicate(&queryDesc, &m_query)))
       throw DxvkError("Failed to create occlusion query");
   }
   
@@ -353,6 +353,8 @@ public:
   
   
   void run() {
+    static int x = 1;
+
     this->adjustBackBuffer();
     
     D3D11_VIEWPORT viewport;
@@ -383,15 +385,19 @@ public:
     m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
     m_context->IASetInputLayout(m_vertexFormat.ptr());
     m_context->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vsStride, &vsOffset);
-    m_context->Draw(3, 0);
-    m_context->Draw(3, 3);
+    m_context->Draw(3 * x, 0);
+    m_context->Draw(3 * x, 3);
     m_context->End(m_query.ptr());
+
+    x = 1 - x;
     
     // Test instanced draws with base instance and base vertex
     vsOffset = 6 * sizeof(Vertex);
+    m_context->SetPredication(m_query.ptr(), FALSE);
     m_context->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vsStride, &vsOffset);
     m_context->DrawInstanced(3, 1, 0, 1);
     m_context->DrawInstanced(3, 1, 3, 1);
+    m_context->SetPredication(nullptr, FALSE);
     
     // Test indexed draws with base vertex and base index
     vsOffset = 12 * sizeof(Vertex);
@@ -411,7 +417,7 @@ public:
     
     // Test query results
     while (true) {
-      UINT64 samplesPassed = 0;
+      BOOL samplesPassed = 0;
       
       UINT queryStatus = m_context->GetData(
         m_query.ptr(), &samplesPassed, sizeof(samplesPassed),
@@ -482,7 +488,7 @@ private:
   Com<ID3D11DomainShader>       m_domainShader;
   Com<ID3D11PixelShader>        m_pixelShader;
   
-  Com<ID3D11Query>              m_query;
+  Com<ID3D11Predicate>          m_query;
   
   D3D_FEATURE_LEVEL             m_featureLevel;
   
