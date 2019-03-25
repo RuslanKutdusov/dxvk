@@ -63,6 +63,7 @@ namespace dxvk {
       const Rc<vk::DeviceFn>&   vkd,
       const Rc<DxvkImageView>&  dstImageView,
       const Rc<DxvkImageView>&  srcImageView,
+      const Rc<DxvkImageView>&  srcImageViewStencil,
             bool                discardDst);
     
     ~DxvkMetaCopyRenderPass();
@@ -81,6 +82,7 @@ namespace dxvk {
 
     const Rc<DxvkImageView> m_dstImageView;
     const Rc<DxvkImageView> m_srcImageView;
+    const Rc<DxvkImageView> m_srcImageViewStencil;
     
     VkRenderPass  m_renderPass  = VK_NULL_HANDLE;
     VkFramebuffer m_framebuffer = VK_NULL_HANDLE;
