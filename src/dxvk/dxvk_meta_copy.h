@@ -148,6 +148,7 @@ namespace dxvk {
 
     FragShaders m_color;
     FragShaders m_depth;
+    FragShaders m_depthStencil;
 
     std::mutex m_mutex;
 

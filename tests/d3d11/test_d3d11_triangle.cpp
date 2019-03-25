@@ -344,6 +344,23 @@ public:
     
     if (FAILED(m_device->CreateQuery(&queryDesc, &m_query)))
       throw DxvkError("Failed to create occlusion query");
+    
+    D3D11_TEXTURE2D_DESC depthDesc;
+    depthDesc.Width       = 512;
+    depthDesc.Height      = 512;
+    depthDesc.MipLevels   = 1;
+    depthDesc.ArraySize   = 1;
+    depthDesc.Format      = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
+    depthDesc.SampleDesc  = { 1, 0 };
+    depthDesc.Usage       = D3D11_USAGE_DEFAULT;
+    depthDesc.BindFlags   = D3D11_BIND_DEPTH_STENCIL
+                          | D3D11_BIND_SHADER_RESOURCE;
+    depthDesc.CPUAccessFlags  = 0;
+    depthDesc.MiscFlags       = 0;
+
+    if (FAILED(m_device->CreateTexture2D(&depthDesc, nullptr, &m_depth1))
+     || FAILED(m_device->CreateTexture2D(&depthDesc, nullptr, &m_depth2)))
+      throw DxvkError("Failed to create depth buffers");
   }
   
   
@@ -406,6 +423,8 @@ public:
     m_context->DrawIndexed(3, 6, 0);
     
     m_context->OMSetRenderTargets(0, nullptr, nullptr);
+
+    m_context->CopyResource(m_depth1.ptr(), m_depth2.ptr());
     
     m_swapChain->Present(1, 0);
     
@@ -481,6 +500,9 @@ private:
   Com<ID3D11HullShader>         m_hullShader;
   Com<ID3D11DomainShader>       m_domainShader;
   Com<ID3D11PixelShader>        m_pixelShader;
+
+  Com<ID3D11Texture2D>          m_depth1;
+  Com<ID3D11Texture2D>          m_depth2;
   
   Com<ID3D11Query>              m_query;
   
