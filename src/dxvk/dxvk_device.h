@@ -33,6 +33,7 @@ namespace dxvk {
   struct DxvkDeviceOptions {
     uint32_t maxNumDynamicUniformBuffers = 0;
     uint32_t maxNumDynamicStorageBuffers = 0;
+    bool     useShaderDepthStencilCopy   = false;
   };
   
   /**

@@ -68,6 +68,7 @@ namespace dxvk {
     DxvkDeviceOptions options;
     options.maxNumDynamicUniformBuffers = m_properties.limits.maxDescriptorSetUniformBuffersDynamic;
     options.maxNumDynamicStorageBuffers = m_properties.limits.maxDescriptorSetStorageBuffersDynamic;
+    options.useShaderDepthStencilCopy   = m_extensions.extShaderStencilExport;
     return options;
   }
   
