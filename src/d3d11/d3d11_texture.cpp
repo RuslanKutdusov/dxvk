@@ -332,6 +332,9 @@ namespace dxvk {
                         |  VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT;
     }
 
+    if (Tiling == VK_IMAGE_TILING_OPTIMAL && (imageFormatInfo(Format)->aspectMask & VK_IMAGE_ASPECT_DEPTH_BIT))
+      requestedFeatures |= VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT;
+
     if (requestedFeatures == 0)
       return 0;
 
