@@ -346,12 +346,12 @@ public:
       throw DxvkError("Failed to create occlusion query");
     
     D3D11_TEXTURE2D_DESC depthDesc;
-    depthDesc.Width       = 512;
-    depthDesc.Height      = 512;
+    depthDesc.Width       = 1920 * 2;
+    depthDesc.Height      = 1080 * 2;
     depthDesc.MipLevels   = 1;
     depthDesc.ArraySize   = 1;
     depthDesc.Format      = DXGI_FORMAT_D32_FLOAT_S8X24_UINT;
-    depthDesc.SampleDesc  = { 1, 0 };
+    depthDesc.SampleDesc  = { 8, 0 };
     depthDesc.Usage       = D3D11_USAGE_DEFAULT;
     depthDesc.BindFlags   = D3D11_BIND_DEPTH_STENCIL
                           | D3D11_BIND_SHADER_RESOURCE;
@@ -396,13 +396,11 @@ public:
     UINT vsOffset = 0;
     
     // Test normal draws with base vertex
-    m_context->Begin(m_query.ptr());
     m_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_3_CONTROL_POINT_PATCHLIST);
     m_context->IASetInputLayout(m_vertexFormat.ptr());
     m_context->IASetVertexBuffers(0, 1, &m_vertexBuffer, &vsStride, &vsOffset);
     m_context->Draw(3, 0);
     m_context->Draw(3, 3);
-    m_context->End(m_query.ptr());
     
     // Test instanced draws with base instance and base vertex
     vsOffset = 6 * sizeof(Vertex);
@@ -426,27 +424,7 @@ public:
 
     m_context->CopyResource(m_depth1.ptr(), m_depth2.ptr());
     
-    m_swapChain->Present(1, 0);
-    
-    // Test query results
-    while (true) {
-      UINT64 samplesPassed = 0;
-      
-      UINT queryStatus = m_context->GetData(
-        m_query.ptr(), &samplesPassed, sizeof(samplesPassed),
-        D3D11_ASYNC_GETDATA_DONOTFLUSH);
-      
-      if (queryStatus == S_OK) {
-        if (samplesPassed == 0)
-          std::cerr << "Occlusion query returned 0 samples" << std::endl;
-        break;
-      } else if (queryStatus == S_FALSE) {
-        std::this_thread::yield();
-      } else {
-        std::cerr << "Occlusion query failed" << std::endl;
-        break;
-      }
-    }
+    m_swapChain->Present(0, 0);
   }
   
   
@@ -503,6 +481,7 @@ private:
 
   Com<ID3D11Texture2D>          m_depth1;
   Com<ID3D11Texture2D>          m_depth2;
+  Com<ID3D11ShaderResourceView> m_depthView;
   
   Com<ID3D11Query>              m_query;
   
