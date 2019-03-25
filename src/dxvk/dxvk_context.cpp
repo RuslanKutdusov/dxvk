@@ -815,10 +815,18 @@ namespace dxvk {
 
     bool useFbCopy = dstSubresource.aspectMask != srcSubresource.aspectMask;
 
-    if (m_device->options().useShaderDepthStencilCopy) {
-      useFbCopy |= dstSubresource.aspectMask == (VK_IMAGE_ASPECT_DEPTH_BIT | VK_IMAGE_ASPECT_STENCIL_BIT)
-                && (dstImage->info().usage & VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT)
-                && (srcImage->info().usage & VK_IMAGE_USAGE_SAMPLED_BIT);
+    if (!useFbCopy) {
+      auto aspectMask = VK_IMAGE_ASPECT_COLOR_BIT | VK_IMAGE_ASPECT_DEPTH_BIT;
+
+      if (m_device->options().useShaderDepthStencilCopy)
+        aspectMask |= VK_IMAGE_ASPECT_STENCIL_BIT;
+      
+      if (!srcImage->formatInfo()->flags.any(DxvkFormatFlag::SampledUInt, DxvkFormatFlag::SampledSInt)) {
+        useFbCopy = (dstSubresource.aspectMask & aspectMask) == dstSubresource.aspectMask
+                 && (dstImage->info().usage & (VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT))
+                 && (srcImage->info().usage & (VK_IMAGE_USAGE_SAMPLED_BIT))
+                 && (dstImage->info().sampleCount == VK_SAMPLE_COUNT_1_BIT);
+      }
     }
     
     if (!useFbCopy) {
