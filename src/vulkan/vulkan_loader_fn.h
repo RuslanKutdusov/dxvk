@@ -11,7 +11,7 @@
 #undef _WIN32
 #endif
 
-#define VK_USE_PLATFORM_WIN32_KHR 1
+//#define VK_USE_PLATFORM_WIN32_KHR 1
 #include <vulkan/vulkan.h>
 
 #ifdef __WINE__

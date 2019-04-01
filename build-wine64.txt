@@ -1,6 +1,6 @@
 [binaries]
-c = 'winegcc'
-cpp = 'wineg++'
+c = 'gcc'
+cpp = 'g++'
 ar = 'ar'
 strip = 'strip'
 

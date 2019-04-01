@@ -40,11 +40,7 @@ namespace dxvk {
       // Reference for the thread function
       this->incRef();
 
-      m_handle = ::CreateThread(nullptr, 0,
-        ThreadFn::threadProc, this, 0, nullptr);
-      
-      if (m_handle == nullptr)
-        throw DxvkError("Failed to create thread");
+      m_thread = std::thread(ThreadFn::threadProc);
     }
 
     ~ThreadFn() {
@@ -53,18 +49,15 @@ namespace dxvk {
     }
     
     void detach() {
-      ::CloseHandle(m_handle);
-      m_handle = nullptr;
+      m_thread.detach();
     }
 
     void join() {
-      if(::WaitForSingleObjectEx(m_handle, INFINITE, FALSE) == WAIT_FAILED)
-        throw DxvkError("Failed to join thread");
-      this->detach();
+      m_thread.join();
     }
 
     bool joinable() const {
-      return m_handle != nullptr;
+      return m_thread.joinable();
     }
 
     void set_priority(ThreadPriority priority) {
@@ -74,7 +67,7 @@ namespace dxvk {
   private:
 
     Proc    m_proc;
-    HANDLE  m_handle;
+    std::thread m_thread;
 
     static DWORD WINAPI threadProc(void *arg) {
       auto thread = reinterpret_cast<ThreadFn*>(arg);

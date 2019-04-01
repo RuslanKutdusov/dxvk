@@ -7,8 +7,8 @@
 #endif // __GNUC__
 
 #define WIN32_LEAN_AND_MEAN
-#include <windows.h>
-#include <unknwn.h>
+//#include <windows.h>
+//#include <unknwn.h>
 
 // GCC: -std options disable certain keywords
 // https://gcc.gnu.org/onlinedocs/gcc/Alternate-Keywords.html

@@ -8,17 +8,17 @@
 
 namespace dxvk::str {
   
-  std::string fromws(const WCHAR *ws);
+  /*std::string fromws(const WCHAR *ws);
 
-  std::vector<WCHAR> tows(const std::string& str);
+  std::vector<WCHAR> tows(const std::string& str);*/
   
   inline void format1(std::stringstream&) { }
 
-  template<typename... Tx>
+  /*template<typename... Tx>
   void format1(std::stringstream& str, const WCHAR *arg, const Tx&... args) {
     str << fromws(arg);
     format1(str, args...);
-  }
+  }*/
 
   template<typename T, typename... Tx>
   void format1(std::stringstream& str, const T& arg, const Tx&... args) {

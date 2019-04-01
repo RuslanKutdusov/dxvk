@@ -7,7 +7,7 @@ static constexpr int cp = CP_ACP;
 #endif
 
 namespace dxvk::str {
-  std::string fromws(const WCHAR *ws) {
+/*  std::string fromws(const WCHAR *ws) {
     size_t len = ::WideCharToMultiByte(cp,
       0, ws, -1, nullptr, 0, nullptr, nullptr);
 
@@ -37,5 +37,5 @@ namespace dxvk::str {
     
     return wideStr;
   }
-
+*/
 }
