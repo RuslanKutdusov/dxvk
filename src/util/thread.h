@@ -9,17 +9,21 @@
 #include "./rc/util_rc.h"
 #include "./rc/util_rc_ptr.h"
 
+#define WINAPI
+using DWORD = uint32_t;
+#include <thread>
+
 namespace dxvk {
 
   /**
    * \brief Thread priority
    */
   enum class ThreadPriority : int32_t {
-    Lowest      = THREAD_PRIORITY_LOWEST,
-    Low         = THREAD_PRIORITY_BELOW_NORMAL,
-    Normal      = THREAD_PRIORITY_NORMAL,
-    High        = THREAD_PRIORITY_ABOVE_NORMAL,
-    Highest     = THREAD_PRIORITY_HIGHEST,
+    Lowest      = 0, //THREAD_PRIORITY_LOWEST,
+    Low         = 1, //THREAD_PRIORITY_BELOW_NORMAL,
+    Normal      = 2, //THREAD_PRIORITY_NORMAL,
+    High        = 3, //THREAD_PRIORITY_ABOVE_NORMAL,
+    Highest     = 4, //THREAD_PRIORITY_HIGHEST,
   };
 
   /**
@@ -40,7 +44,7 @@ namespace dxvk {
       // Reference for the thread function
       this->incRef();
 
-      m_thread = std::thread(ThreadFn::threadProc);
+      m_thread = std::thread(ThreadFn::threadProc, this);
     }
 
     ~ThreadFn() {
@@ -61,7 +65,7 @@ namespace dxvk {
     }
 
     void set_priority(ThreadPriority priority) {
-      ::SetThreadPriority(m_handle, int32_t(priority));
+      //::SetThreadPriority(m_handle, int32_t(priority));
     }
 
   private:
@@ -120,9 +124,7 @@ namespace dxvk {
     }
     
     static uint32_t hardware_concurrency() {
-      SYSTEM_INFO info = { };
-      ::GetSystemInfo(&info);
-      return info.dwNumberOfProcessors;
+      return std::thread::hardware_concurrency();
     }
 
   private:
@@ -134,7 +136,7 @@ namespace dxvk {
 
   namespace this_thread {
     inline void yield() {
-      Sleep(0);
+      std::this_thread::yield();
     }
   }
 }

@@ -355,18 +355,15 @@ namespace dxvk::vk {
   }
 
 
-  VkResult Presenter::createSurface(HWND window) {
-    HINSTANCE instance = reinterpret_cast<HINSTANCE>(
-      GetWindowLongPtr(window, GWLP_HINSTANCE));
-    
-    VkWin32SurfaceCreateInfoKHR info;
-    info.sType      = VK_STRUCTURE_TYPE_WIN32_SURFACE_CREATE_INFO_KHR;
+  VkResult Presenter::createSurface() {
+    VkXcbSurfaceCreateInfoKHR  info;
+    info.sType      = VK_STRUCTURE_TYPE_XCB_SURFACE_CREATE_INFO_KHR;
     info.pNext      = nullptr;
     info.flags      = 0;
-    info.hinstance  = instance;
-    info.hwnd       = window;
+    info.connection  = xcb_connect();
+    info.window       = xcb_generate_id();
     
-    VkResult status = m_vki->vkCreateWin32SurfaceKHR(
+    VkResult status = m_vki->vkCreateXcbSurfaceKHR(
       m_vki->instance(), &info, nullptr, &m_surface);
     
     if (status != VK_SUCCESS)

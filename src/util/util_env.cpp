@@ -13,7 +13,7 @@ namespace dxvk::env {
   
   
   std::string getExeName() {
-    std::vector<WCHAR> exePath;
+    /*std::vector<WCHAR> exePath;
     exePath.resize(MAX_PATH + 1);
     
     DWORD len = ::GetModuleFileNameW(NULL, exePath.data(), MAX_PATH);
@@ -24,12 +24,13 @@ namespace dxvk::env {
     
     return (n != std::string::npos)
       ? fullPath.substr(n + 1)
-      : fullPath;
+      : fullPath;*/
+      return "executable";
   }
   
   
   void setThreadName(const std::string& name) {
-    using SetThreadDescriptionProc = void (WINAPI *) (HANDLE, PCWSTR);
+    /*using SetThreadDescriptionProc = void (WINAPI *) (HANDLE, PCWSTR);
 
     HMODULE module = ::GetModuleHandleW(L"kernel32.dll");
 
@@ -42,13 +43,14 @@ namespace dxvk::env {
     if (proc != nullptr) {
       auto wideName = str::tows(name);
       (*proc)(::GetCurrentThread(), wideName.data());
-    }
+    }*/
   }
 
 
   bool createDirectory(const std::string& path) {
-    auto widePath = str::tows(path);
-    return !!CreateDirectoryW(widePath.data(), nullptr);
+    /*auto widePath = str::tows(path);
+    return !!CreateDirectoryW(widePath.data(), nullptr);*/
+    return false;
   }
   
 }
